@@ -6,19 +6,22 @@ WITH cte_Ranks AS (
       Desc
     ) AS "rank",
     date,
+    time,
+    lake,
+    bass_type,
     weight_oz
   FROM basstracker
   WHERE
     angler = '$angler'
     and date = '$date'
-)
-, cte_Top5 AS (
-  SELECT
-    rank,
-    weight_oz
-  FROM cte_Ranks
-  WHERE rank < 6
+  ORDER BY date, angler, "rank"
 )
 SELECT
-  concat(cast(sum(weight_oz) / 16 as varchar), '-', cast(sum(weight_oz) - (sum(weight_oz)/16) * 16 as varchar)) AS weight
-FROM cte_Top5
+  rank,
+  time,
+  lake,
+  bass_type,
+  concat(cast(weight_oz / 16 as varchar), '-', cast(weight_oz - (weight_oz/16) * 16 as varchar)) AS weight
+FROM cte_Ranks
+WHERE rank < 6
+ORDER BY rank
